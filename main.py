@@ -1,5 +1,5 @@
 def main():
-    print("Hello from sutherland!")
+    print("Hello from amadeus-client-app!")
 
 
 if __name__ == "__main__":
