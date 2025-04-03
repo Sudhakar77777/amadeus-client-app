@@ -6,17 +6,17 @@ def pick_random_airports():
     # Major European airport hubs
     european_airports = [
         "AMS",  # Amsterdam Schiphol, Netherlands
-        "CDG",  # Charles de Gaulle, France
+        # "CDG",  # Charles de Gaulle, France
         "FRA",  # Frankfurt Airport, Germany
         "LHR",  # London Heathrow, United Kingdom
-        "MUC",  # Munich Airport, Germany
-        "MAD",  # Madrid Barajas, Spain
+        # "MUC",  # Munich Airport, Germany
+        # "MAD",  # Madrid Barajas, Spain
         "ZRH",  # Zurich Airport, Switzerland
-        "VIE",  # Vienna International, Austria
-        "FCO",  # Leonardo da Vinci International, Rome, Italy
-        "BCN",  # Barcelona El Prat, Spain
+        # "VIE",  # Vienna International, Austria
+        # "FCO",  # Leonardo da Vinci International, Rome, Italy
+        # "BCN",  # Barcelona El Prat, Spain
         "DUB",  # Dublin Airport, Ireland
-        "OSL",  # Oslo Gardermoen, Norway
+        # "OSL",  # Oslo Gardermoen, Norway
     ]
 
     # Major USA airport hubs
