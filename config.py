@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     amadeus_api_url: HttpUrl
     amadeus_api_key: str
     amadeus_api_secret: str
+    amadeus_host: str
 
 
 @lru_cache

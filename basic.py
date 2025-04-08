@@ -10,11 +10,12 @@ print(config)
 
 def initialize_amadeus_api():
     try:
+        logger.info(config)
         # Initialize the Amadeus client with the logger
         amadeus = Client(
             client_id=config.amadeus_api_key,
             client_secret=config.amadeus_api_secret,
-            hostname='test',  # You can change this to 'production' for real data
+            hostname=config.amadeus_host,  # You can change this to 'production' for real data
             # log_level = "debug"  # enable to see API Request & Response
         )
         print("Init success")
@@ -520,7 +521,7 @@ def main():
 
     # print(amadeus.client_credentials.get_token())
     
-    #1 -- Works, by default gets cheapest flight for the search query
+    # #1 -- Works, by default gets cheapest flight for the search query
     # logger.debug("Calling Use case #1")
     # get_flight_search(amadeus, 
     #                     originLocationCode='JFK',
@@ -530,8 +531,8 @@ def main():
     
     # #2 -- Works
     logger.debug("Calling Use case #2")
-    # booking_id = place_an_order(amadeus)
-    booking_id = 'eJzTd9f3dg529HUHAAsyAlw%3D'
+    booking_id = place_an_order(amadeus)
+    # booking_id = 'eJzTd9cPcffyNfMBAAtTAlo%3D'
     logger.debug(f"Booking is complete for PNR# {booking_id}")
     get_booking_details(amadeus, booking_id)
 
