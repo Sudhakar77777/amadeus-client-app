@@ -3,8 +3,8 @@ import time
 from functools import wraps
 from datetime import datetime
 from amadeus import Client, ResponseError
-from basic_logger import logger
-from config import config
+from base_logger import logger
+from base_config import config
 from client_api_data_format import convert_flight_details_to_sentences, convert_flight_options_to_sentences
 from utils import pick_random_airports, generate_random_travelers_data
 
@@ -112,24 +112,24 @@ def main():
     logger.debug("🚀 Starting Amadeus client...")
     client = AmadeusAPIClient(config)
 
-    # logger.info("🔹 Use Case 1: Direct Flight Search")
-    # try:
-    #     flights = client.get_flight_search('JFK', 'LHR', '2025-06-01', 1)
-    #     logger.debug(json.dumps(flights, indent=2))
-    # except Exception as e:
-    #     logger.error(f"❌ UC1 failed: {e}")
-
-    logger.info("🔹 Use Case 2: Random Search + Booking")
+    logger.info("🔹 Use Case 1: Direct Flight Search")
     try:
-        offers, count = client.search_random_flight()
-        priced_offer = client.confirm_price(offers[0])
-        travelers = generate_random_travelers_data(count)
-        booking_id = client.book_flight(offers[0], travelers)
-        logger.info(f"✅ Booking complete: {booking_id}")
-        details = client.get_booking(booking_id)
-        logger.debug(json.dumps(details, indent=2))
+        flights = client.get_flight_search('JFK', 'LHR', '2025-06-01', 1)
+        logger.debug(json.dumps(flights, indent=2))
     except Exception as e:
-        logger.error(f"❌ UC2 failed: {e}")
+        logger.error(f"❌ UC1 failed: {e}")
+
+    # logger.info("🔹 Use Case 2: Random Search + Booking")
+    # try:
+    #     offers, count = client.search_random_flight()
+    #     priced_offer = client.confirm_price(offers[0])
+    #     travelers = generate_random_travelers_data(count)
+    #     booking_id = client.book_flight(offers[0], travelers)
+    #     logger.info(f"✅ Booking complete: {booking_id}")
+    #     details = client.get_booking(booking_id)
+    #     logger.debug(json.dumps(details, indent=2))
+    # except Exception as e:
+    #     logger.error(f"❌ UC2 failed: {e}")
 
     client.close()
 

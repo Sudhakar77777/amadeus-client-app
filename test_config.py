@@ -1,4 +1,4 @@
-from config import Settings
+from base_config import Settings
 
 try:
     config = Settings()

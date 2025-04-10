@@ -1,5 +1,4 @@
 from datetime import datetime
-from basic_logger import logger
 
 
 def extract_flight_options_data(data) -> list[dict]:
@@ -29,12 +28,11 @@ def extract_flight_options_data(data) -> list[dict]:
             last_arrival_time = None
 
             for segment in itinerary["segments"]:
-                
                 departure_airport = segment["departure"]["iataCode"]
-                departure_terminal = segment["departure"].get("terminal", 'TBD')
+                departure_terminal = segment["departure"].get("terminal", "TBD")
                 departure_time = segment["departure"]["at"]
                 arrival_airport = segment["arrival"]["iataCode"]
-                arrival_terminal = segment["arrival"].get("terminal", 'TBD')
+                arrival_terminal = segment["arrival"].get("terminal", "TBD")
                 arrival_time = segment["arrival"]["at"]
                 segment_duration = segment["duration"]  # Add the segment duration here
                 flight_number = segment["number"]
@@ -137,6 +135,7 @@ def convert_flight_options_to_sentences(flight_data) -> str:
             num_segments = len(itinerary["segments"])
             itinerary_segments.append(f"This itinerary has {num_segments} segments.")
             for i, segment in enumerate(itinerary["segments"], start=1):
+                carrier_code = segment["carrier_code"]
                 flight_number = segment["flight_number"]
                 departure_airport = segment["departure_airport"]
                 departure_terminal = segment["departure_terminal"]
@@ -152,7 +151,7 @@ def convert_flight_options_to_sentences(flight_data) -> str:
 
                 # Segment duration included
                 segment_text = (
-                    f"Segment {i}: Flight {flight_number} from {departure_airport} (Terminal {departure_terminal}) to {arrival_airport} (Terminal {arrival_terminal}) "
+                    f"Segment {i}: Flight {carrier_code}{flight_number} from {departure_airport}(Terminal {departure_terminal}) to {arrival_airport}(Terminal {arrival_terminal}) "
                     f"departing on {departure_date} at {departure_time} and arriving on {arrival_date} at {arrival_time}. The duration of this segment is {segment_duration}."
                 )
                 itinerary_segments.append(segment_text)
@@ -187,7 +186,6 @@ def convert_flight_details_to_sentences(booking_data):
             arrival = segment["arrival"]
 
             # Handle missing terminal information
-            logger.info("Not supposed to be here...")
             departure_terminal = departure.get("terminal", "N/A")
             arrival_terminal = arrival.get("terminal", "N/A")
 
@@ -201,8 +199,8 @@ def convert_flight_details_to_sentences(booking_data):
 
             # Build segment description
             segment_info = (
-                f"Flight {segment['number']} from {departure['iataCode']} (Terminal {departure_terminal}) "
-                f"to {arrival['iataCode']} (Terminal {arrival_terminal}) "
+                f"Flight {segment['carrierCode']}{segment['number']} from {departure['iataCode']}(Terminal {departure_terminal}) "
+                f"to {arrival['iataCode']}(Terminal {arrival_terminal}) "
                 f"departing on {departure_time} and arriving on {arrival_time}."
             )
             segments.append(segment_info)
