@@ -14,7 +14,7 @@ headers = {
 }
 messages = {
     "flight_search": "Hey! Find me a flight from FRA to SFO on 2025-06-14 for 2 adult(s).",
-    "booking_details": "Find my booking details, pnr number is eJzTd9cPcffyNfMBAAtTAlo%3D."
+    "booking_details": "Find my booking details, pnr number is eJzTd9cPCQqy8PAEAAuMAmc%3D."
 }
 
 # Timeit decorator
