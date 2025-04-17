@@ -5,17 +5,17 @@ from datetime import datetime, timedelta, date
 def pick_random_airports():
     # Major European airport hubs
     european_airports = [
-        "AMS",  # Amsterdam Schiphol, Netherlands
-        # "CDG",  # Charles de Gaulle, France
-        "FRA",  # Frankfurt Airport, Germany
+        # "AMS",  # Amsterdam Schiphol, Netherlands
+        "CDG",  # Charles de Gaulle, France
+        # "FRA",  # Frankfurt Airport, Germany
         "LHR",  # London Heathrow, United Kingdom
         # "MUC",  # Munich Airport, Germany
         # "MAD",  # Madrid Barajas, Spain
-        "ZRH",  # Zurich Airport, Switzerland
+        # "ZRH",  # Zurich Airport, Switzerland
         # "VIE",  # Vienna International, Austria
         # "FCO",  # Leonardo da Vinci International, Rome, Italy
         # "BCN",  # Barcelona El Prat, Spain
-        "DUB",  # Dublin Airport, Ireland
+        # "DUB",  # Dublin Airport, Ireland
         # "OSL",  # Oslo Gardermoen, Norway
     ]
 
@@ -34,10 +34,18 @@ def pick_random_airports():
         "LGA",  # LaGuardia Airport, New York
         "PHX",  # Phoenix Sky Harbor International, Arizona
     ]
+
+    # Major IND airport hubs
+    india_airports = [
+        # "DEL",  # Delhi
+        "BOM",  # Bombay, Mumbai
+        "CCU",  # Culcutta
+        # "MAS",  # Madras, Chennai
+    ]
     
     # Select one random airport from each list
     european_airport = random.choice(european_airports)
-    usa_airport = random.choice(usa_airports)
+    usa_airport = random.choice(india_airports)
 
     # Override with both europe airport codes for testing
     # european_airport, usa_airport = random.sample(european_airports, 2)

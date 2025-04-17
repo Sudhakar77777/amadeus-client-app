@@ -1,5 +1,6 @@
 from datetime import datetime
-
+from base_logger import logger
+from pprint import pformat
 
 def extract_flight_options_data(data) -> list[dict]:
     flight_options = []
@@ -231,3 +232,105 @@ def convert_flight_details_to_sentences(booking_data):
     flight_details += f"\nThe total price for the flight is {total_price} {currency}.\n"
 
     return {f"Booking_data for {flight_order_id}": str(flight_details)}
+
+def parse_flight_status(response):
+    flight_details = {
+        'scheduledDepartureDate': 'Unknown',
+        'carrierCode': 'Unknown',
+        'flightNumber': 'Unknown',
+        'departurePoint': 'Unknown',
+        'arrivalPoint': 'Unknown',
+        'departureTime': 'Unknown',
+        'arrivalTime': 'Unknown',
+        'aircraftType': 'Unknown',
+        'flightDuration': 'Unknown',
+        'operatingCarrierCode': 'Unknown',
+        'operatingFlightNumber': 'Unknown'
+    }
+
+    if isinstance(response, list) and len(response) > 0:
+        flight_record = response[0]
+
+        # Basic info
+        flight_details['scheduledDepartureDate'] = flight_record.get('scheduledDepartureDate', 'Unknown')
+        flight_designator = flight_record.get('flightDesignator', {})
+        flight_details['carrierCode'] = flight_designator.get('carrierCode', 'Unknown')
+        flight_details['flightNumber'] = flight_designator.get('flightNumber', 'Unknown')
+
+        # Flight points
+        flight_points = flight_record.get('flightPoints', [])
+        if len(flight_points) >= 2:
+            flight_details['departurePoint'] = flight_points[0].get('iataCode', 'Unknown')
+            departure_timings = flight_points[0].get('departure', {}).get('timings', [{}])
+            flight_details['departureTime'] = departure_timings[0].get('value', 'Unknown')
+
+            flight_details['arrivalPoint'] = flight_points[1].get('iataCode', 'Unknown')
+            arrival_timings = flight_points[1].get('arrival', {}).get('timings', [{}])
+            flight_details['arrivalTime'] = arrival_timings[0].get('value', 'Unknown')
+        else:
+            logger.warning("⚠️ Incomplete flightPoints data.")
+
+        # Aircraft info
+        legs = flight_record.get('legs', [])
+        if legs:
+            leg = legs[0]
+            flight_details['aircraftType'] = leg.get('aircraftEquipment', {}).get('aircraftType', 'Unknown')
+
+        # Segment duration and codeshare
+        segments = flight_record.get('segments', [])
+        if segments:
+            segment = segments[0]
+            flight_details['flightDuration'] = segment.get('scheduledSegmentDuration', 'Unknown')
+
+            operating_flight = segment.get('partnership', {}).get('operatingFlight', {})
+            flight_details['operatingCarrierCode'] = operating_flight.get('carrierCode', 'Unknown')
+            flight_details['operatingFlightNumber'] = operating_flight.get('flightNumber', 'Unknown')
+
+        return flight_details
+    else:
+        logger.error("❌ No valid flight record found in response.")
+        return None
+    
+
+def convert_flight_status_to_sentences(details):
+    details = parse_flight_status(details)
+    sentence = (
+        f"Flight {details['carrierCode']} {details['flightNumber']} is scheduled to depart from "
+        f"{details['departurePoint']} at {details['departureTime']} and arrive at "
+        f"{details['arrivalPoint']} at {details['arrivalTime']}."
+    )
+
+    # Add flight duration if available
+    if details['flightDuration'] != 'Unknown':
+        # Convert ISO 8601 duration to readable format if needed
+        duration = details['flightDuration'].replace('PT', '').lower()
+        sentence += f" The flight duration is {duration}."
+
+    # Add operating carrier info if it’s a codeshare
+    if (details['operatingCarrierCode'] != 'Unknown' and 
+        (details['operatingCarrierCode'] != details['carrierCode'] or 
+         str(details['operatingFlightNumber']) != str(details['flightNumber']))):
+        sentence += f" It is operated by {details['operatingCarrierCode']} as flight {details['operatingFlightNumber']}."
+
+    # Add aircraft type if available
+    if details['aircraftType'] != 'Unknown':
+        sentence += f" The aircraft type is {details['aircraftType']}."
+
+    return sentence
+
+def convert_airline_destinations_to_sentences(destinations, airline_code):
+    if not destinations:
+        return f"No destination data available for airline {airline_code}."
+
+    lines = [f"✈️ Destinations served by {airline_code}:\n"]
+
+    for dest in destinations:
+        name = dest.get('name', 'Unknown City')
+        airport = dest.get('iataCode', 'Unknown Airport')
+        country = dest.get('address', {}).get('countryName', 'Unknown Country')
+        state = dest.get('address', {}).get('stateCode')
+
+        state_info = f", {state}" if state else ""
+        lines.append(f"• {name} ({airport}), {country}{state_info}")
+
+    return "\n".join(lines)
