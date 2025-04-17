@@ -1,0 +1,43 @@
+Usecase #1: Flight Search
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Flight Offer ID: 1
+
+- Total Price: 1502.60 EUR
+- Total Trip Duration: 17:10:00
+- Booking Deadline: 2025-09-14
+- Available Seats: 4
+- Fare Option: STANDARD
+- Adult Price: 751.30 EUR
+
+Itinerary:
+- Segment 1: Flight TP6706 from FRA(Terminal 1) to LIS(Terminal 1) departing on 2025-09-14 at 21:20:00 and arriving on 2025-09-14 at 23:30:00. Duration: PT3H10M.
+- Segment 2: Flight TP237 from LIS(Terminal 1) to SFO(Terminal I) departing on 2025-09-15 at 09:55:00 and arriving on 2025-09-15 at 14:30:00. Duration: PT12H35M.
+
+Please note that these details are subject to change and availability. It is recommended to book your flight as soon as possible to secure your seat.
+
+
+Usecase #2: Booking Lookup
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Booking Details:
+
+- Booking Reference: eJzTd9cPcffyNfMBAAtTAlo%
+- Name: JONATHAN KELLEY
+- Price: 452.21 EUR
+- Name: ALEXIS STEVENS
+- Price: 452.21 EUR
+
+Flight Details:
+
+- Flight UX1098
+  - Departure: AMS (Terminal N/A)
+  - Destination: MAD (Terminal 2)
+  - Departure Time: August 26, 2025 at 11:00
+  - Arrival Time: August 26, 2025 at 13:40
+
+- Flight UX91
+  - Departure: MAD (Terminal 1)
+  - Destination: JFK (Terminal 4)
+  - Departure Time: August 26, 2025 at 15:35
+  - Arrival Time: August 26, 2025 at 17:45

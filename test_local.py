@@ -17,13 +17,15 @@ def reset_chat_history():
 
 flight_search_test = post(f"{url}", headers=headers, data={
         "chat_id": chat_id,
-        "prompt_key": "",
-        # "message": f"""Hey! Find me a flight from FRA to SFO on 2025-06-14 for 2 adult(s).""",  
-        "message": f"""Find my booking details, pnr number is eJzTd9cPcffyNfMBAAtTAlo%3D.""",
+        "prompt_key": "sutherland",
+        # "message": f"""Hey! Find me a flight from FRA to SFO on 2025-09-14 for 2 adult(s).""",  
+        "message": f"""Find me flight from Doha to Riyadh on 27th September for 1 adult.""",
+        # "message": f"""Find my booking details, pnr number is eJzTd9cPDTENCPUDAAuPAnc%3D.""",
         "selected_tools": ["amadeus_flight_search", "amadeus_flight_details"],
         # "selected_tools": "amadeus_flight_details",
         # "do_rag": True,
     }, timeout=300)
+
 
 print(f'response: {flight_search_test}')
 response = flight_search_test.json()["completion"]

@@ -168,7 +168,7 @@ def convert_flight_options_to_sentences(flight_data) -> str:
         human_readable_flights.append(" ".join(flight_info))
 
     # Join all flights into one string and return it
-    return "\n\n".join(human_readable_flights)
+    return human_readable_flights  # "\n\n".join(human_readable_flights)
 
 
 def convert_flight_details_to_sentences(booking_data):
