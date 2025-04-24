@@ -7,9 +7,9 @@ def pick_random_airports():
     european_airports = [
         # "AMS",  # Amsterdam Schiphol, Netherlands
         "CDG",  # Charles de Gaulle, France
-        # "FRA",  # Frankfurt Airport, Germany
+        "FRA",  # Frankfurt Airport, Germany
         "LHR",  # London Heathrow, United Kingdom
-        # "MUC",  # Munich Airport, Germany
+        "MUC",  # Munich Airport, Germany
         # "MAD",  # Madrid Barajas, Spain
         # "ZRH",  # Zurich Airport, Switzerland
         # "VIE",  # Vienna International, Austria

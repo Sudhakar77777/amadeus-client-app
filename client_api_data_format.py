@@ -96,6 +96,146 @@ def extract_flight_options_data(data) -> list[dict]:
     return flight_options
 
 
+def convert_flight_pricing(data):
+    offer = data["flightOffers"][0]
+    traveler = offer["travelerPricings"][0]
+    segments = offer["itineraries"][0]["segments"]
+    booking_req = data.get("bookingRequirements", {})
+
+    first_seg = segments[0]
+    last_seg = segments[-1]
+
+    dep_time = datetime.fromisoformat(first_seg["departure"]["at"])
+    arr_time = datetime.fromisoformat(last_seg["arrival"]["at"])
+
+    # 1. Build list of layover cities
+    stop_cities = [seg["arrival"]["iataCode"] for seg in segments[:-1]]
+    stop_desc = ", ".join(stop_cities) if stop_cities else "Non-stop"
+
+    # 2. Total CO2 emissions
+    total_co2 = sum(seg["co2Emissions"][0]["weight"] for seg in segments)
+
+    # 3. Show first and last flight number
+    start_flight = f"{first_seg['carrierCode']}{first_seg['number']}"
+    end_flight = f"{last_seg['carrierCode']}{last_seg['number']}"
+
+    # 4. Price breakdown
+    price_lines = [
+        f"- Base Fare: {offer['price']['base']} {offer['price']['currency']}",
+        "- Taxes:"
+    ]
+    for tax in traveler["price"]["taxes"]:
+        label = f"{tax['code']}"
+        if tax['code'] in ["YQ", "YR"]:  # Known surcharges
+            label += " (Carrier Surcharge)" if tax['code'] == "YQ" else ""
+        price_lines.append(f"  - {label}: {tax['amount']} {offer['price']['currency']}")
+    price_lines += [
+        f"- Refundable Taxes: {traveler['price']['refundableTaxes']} {offer['price']['currency']}",
+        f"- Total: {offer['price']['total']} {offer['price']['currency']}"
+    ]
+
+    # 5. Booking requirements
+    reqs = []
+    if booking_req.get("emailAddressRequired"):
+        reqs.append("- Email address is required")
+    if booking_req.get("mobilePhoneNumberRequired"):
+        reqs.append("- Mobile phone number is required")
+    for tr in booking_req.get("travelerRequirements", []):
+        if tr.get("documentRequired"):
+            reqs.append(f"- Passport or ID document required for Traveler {tr['travelerId']}")
+    if not offer.get("paymentCardRequired"):
+        reqs.append("- No payment card required")
+    if not offer.get("instantTicketingRequired"):
+        reqs.append("- Instant ticketing NOT required")
+
+    summary = f"""
+✈️ Flight Offer Pricing Summary (Offer ID: {offer['id']})
+
+**Route:** {first_seg['departure']['iataCode']} → {last_seg['arrival']['iataCode']}  
+📅 Departure: {dep_time.strftime('%b %d, %H:%M')} | Arrival: {arr_time.strftime('%b %d, %H:%M')}  
+🔁 Stops: {len(segments) - 1} ({stop_desc})  
+🔢 Flights: {start_flight} → {end_flight}  
+💺 Cabin: {traveler['fareDetailsBySegment'][0]['cabin']} (Branded Fare: {traveler['fareDetailsBySegment'][0]['brandedFare']})  
+🧳 Baggage Included: {traveler['fareDetailsBySegment'][0]['includedCheckedBags']['weight']} {traveler['fareDetailsBySegment'][0]['includedCheckedBags']['weightUnit']} checked per segment  
+🌱 CO₂ Emissions: {total_co2} KG
+
+💰 Price Breakdown:
+""" + "\n".join(price_lines) + f"""
+
+👤 Traveler Type: {traveler['travelerType']} | Fare Option: {traveler['fareOption']} | Class: {traveler['fareDetailsBySegment'][0]['class']}  
+🏷️ Fare Basis: {traveler['fareDetailsBySegment'][0]['fareBasis']}
+
+📅 Last Ticketing Date: {offer['lastTicketingDate']}
+
+✅ Booking Requirements:
+""" + "\n".join(reqs)
+
+    return summary.strip()
+
+
+# Function to format the flight date-time to a compact format like "Aug 10,10:05" or "Aug 10"
+def format_flight_datetime(dt_str: str) -> str:
+    try:
+        # Handle ISO format with optional timezone
+        dt = datetime.fromisoformat(dt_str)
+        formatted = dt.strftime('%b %d, %H:%M')
+        
+        # Append timezone offset if available
+        if dt.tzinfo:
+            offset = dt.tzinfo.utcoffset(dt)
+            if offset is not None:
+                hours = int(offset.total_seconds() // 3600)
+                formatted += f' UTC{hours:+}'
+        return formatted
+    except ValueError:
+        try:
+            # Handle plain date format
+            dt = datetime.strptime(dt_str, '%Y-%m-%d')
+            return dt.strftime('%b %d')
+        except ValueError:
+            return dt_str
+
+def format_flight_details(flight_data):
+    result = []
+    # Iterate through all the flight offers
+    for idx, offer in enumerate(flight_data):
+        # Collect relevant details from the offer
+        total_price = offer['price']['grandTotal']
+        price_currency = offer['price']['currency']
+        number_of_seats = offer['numberOfBookableSeats']
+        last_ticketing_date = format_flight_datetime(offer['lastTicketingDateTime'])
+        
+        # Get the segments from the first itinerary
+        segments = offer['itineraries'][0]['segments']
+        
+        # Get the total journey duration directly from the input JSON
+        total_duration = offer['itineraries'][0]['duration']
+        
+        # Generate the option label (Offer 1: WY202: BOM → MCT, etc.)
+        departure_time = format_flight_datetime(segments[0]['departure']['at'])
+        arrival_time = format_flight_datetime(segments[-1]['arrival']['at'])
+        option_label = f"Offer {idx + 1}: {segments[0]['departure']['iataCode']} → {segments[-1]['arrival']['iataCode']} ({departure_time} → {arrival_time})"
+        
+        # Collect segment details
+        segments_info = []
+        for segment in segments:
+            departure = segment['departure']['iataCode']
+            arrival = segment['arrival']['iataCode']
+            flight_number = segment['carrierCode'] + segment['number']
+            departure_time = format_flight_datetime(segment['departure']['at'])
+            arrival_time = format_flight_datetime(segment['arrival']['at'])
+            segments_info.append(f"{flight_number} {departure}→{arrival} ({departure_time} → {arrival_time})")
+        
+        # Combine the relevant details in a compact format
+        result.append(
+            f"{option_label}\n"
+            f"💰Total: {total_price} {price_currency} 🕒Duration: {total_duration}\n"
+            f"Segments: {(segments_info)}\n"
+            f"👤 Seats Available: {number_of_seats} | Book tickets by: {last_ticketing_date} \n"
+        )
+    return result
+    
+
 def convert_flight_options_to_sentences(flight_data) -> str:
     """
     Convert the flight data into a human-readable string.
@@ -296,8 +436,8 @@ def convert_flight_status_to_sentences(details):
     details = parse_flight_status(details)
     sentence = (
         f"Flight {details['carrierCode']} {details['flightNumber']} is scheduled to depart from "
-        f"{details['departurePoint']} at {details['departureTime']} and arrive at "
-        f"{details['arrivalPoint']} at {details['arrivalTime']}."
+        f"{details['departurePoint']} at {format_flight_datetime(details['departureTime'])} and arrive at "
+        f"{details['arrivalPoint']} at {format_flight_datetime(details['arrivalTime'])}."
     )
 
     # Add flight duration if available
