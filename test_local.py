@@ -17,21 +17,21 @@ def reset_chat_history():
 
 flight_search_test = post(f"{url}", headers=headers, data={
         "chat_id": chat_id,
-        "prompt_key": "sutherland",
-        "message": f"""Hey! Find me a flight from Chennai to Paris on 2025-11-22 for 1 adult(s).""",  
+        "prompt_key": "oman_air",
+        # "message": f"""Hey! Find me a flight from Chennai to Paris on 2025-11-22 for 1 adult(s).""",  
         # "message": f"""Find me a flight from Amsterdam to Muscat on Aug 19th.""",  
         # "message": f"""Find me flight from Doha to Riyadh on 27th September for 1 adult.""",
-        # "message": f"""Find my booking details, pnr number is eJzTd9cPDTENCPUDAAuPAnc%3D.""",
+        "message": f"""Find my booking details, pnr number is eJzTd9cPNzVxNYkAAAqjAjc%3D and last name is CHEN.""",
         # "message": f"""Get me the flight status for Oman air WY 101 departing on 2025-05-14.""",
-        # "message": f"""Get me the flight status for my pnr number eJzTd9cPC3AK8gsGAAuyAoE%3D.""",
-        # "message": f"""Show me all Oman air destinations to GB.""",
+        # "message": f"""Get me the flight status for my pnr number eJzTd9cPNzVxNYkAAAqjAjc%3D.""",
+        # "message": f"""Show me top 10 destinations to india.""",
         # "message": f"""Show me airport code for Mumbai in India.""",
         # "message": f"""Show me airline record for Oman Air.""",
         # "selected_tools": "amadeus_booking_details",
         "selected_tools": ["amadeus_flight_offers", "amadeus_booking_details", "amadeus_cancel_booking", 
-                           "amadeus_flight_status", "amadeus_airline_destinations" ],  # "airport_lookup", "airline_lookup"
+                           "amadeus_flight_status", "amadeus_airline_destinations", "send_email" ],  # "airport_lookup", "airline_lookup"
         # "selected_tools": "amadeus_flight_status_by_pnr",
-        # "do_rag": True,
+        # "do_rag": True,  # ==> This option need Elastic search setup in local.
     }, timeout=300)
 
 

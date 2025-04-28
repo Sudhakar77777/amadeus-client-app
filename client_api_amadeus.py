@@ -326,22 +326,22 @@ def main():
     logger.debug("🚀 Starting Amadeus client...")
     client = AmadeusAPIClient(config)
 
-    # Special case of generated PNR Numbers in bulk:
-    booking_ids = []
-    for i in range(10):
-        logger.info(f"🔹 Use Case 0: Random Search + Booking [Run {i+1}]")
-        try:
-            offers, count = client.search_random_flight()
-            priced_offer = client.confirm_price(offers[0])
-            travelers = generate_random_travelers_data(count)
-            booking_id = client.book_flight(offers[0], travelers)
-            booking_ids.append(booking_id)
-            logger.info(f"✅ Booking complete: {booking_id}")
-        except Exception as e:
-            logger.error(f"❌ UC0 failed on run {i+1}: {e}")
-    # Print final list of booking IDs
-    print("📦 Final list of booking IDs:")
-    print(booking_ids)
+    # # Special case of generated PNR Numbers in bulk:
+    # booking_ids = []
+    # for i in range(10):
+    #     logger.info(f"🔹 Use Case 0: Random Search + Booking [Run {i+1}]")
+    #     try:
+    #         offers, count = client.search_random_flight()
+    #         priced_offer = client.confirm_price(offers[0])
+    #         travelers = generate_random_travelers_data(count)
+    #         booking_id = client.book_flight(offers[0], travelers)
+    #         booking_ids.append(booking_id)
+    #         logger.info(f"✅ Booking complete: {booking_id}")
+    #     except Exception as e:
+    #         logger.error(f"❌ UC0 failed on run {i+1}: {e}")
+    # # Print final list of booking IDs
+    # print("📦 Final list of booking IDs:")
+    # print(booking_ids)
 
     # logger.info("🔹 Use Case 1: Flight Search")
     # try:
@@ -381,13 +381,13 @@ def main():
     # except Exception as e:
     #     logger.error(f"❌ UC2 failed: {e}")
 
-    # logger.info("🔹 Use Case 3: Get Booking Details")
-    # try:
-    #     booking_id = 'eJzTd9cPDTENCPUDAAuPAnc%3D'
-    #     details = client.get_booking(booking_id)
-    #     logger.debug(json.dumps(details, indent=2))
-    # except Exception as e:
-    #     logger.error(f"❌ UC3 failed: {e}")
+    logger.info("🔹 Use Case 3: Get Booking Details")
+    try:
+        booking_id = 'eJzTd9cPDTENCPUDAAuPAnc%3D'
+        details = client.get_booking(booking_id)
+        logger.debug(json.dumps(details, indent=2))
+    except Exception as e:
+        logger.error(f"❌ UC3 failed: {e}")
     
     # logger.info("🔹 Use Case 4: Cancel a Booking")
     # try:

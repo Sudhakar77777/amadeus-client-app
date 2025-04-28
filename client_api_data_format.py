@@ -1,4 +1,5 @@
 from datetime import datetime
+import json
 from base_logger import logger
 from pprint import pformat
 
@@ -314,6 +315,16 @@ def convert_flight_options_to_sentences(flight_data) -> str:
 
 def convert_flight_details_to_sentences(booking_data):
     # Parse basic flight order information
+    logger.debug(json.dumps(booking_data, indent=2, ensure_ascii=False))
+    # Extract last names
+    # last_names = [traveler["name"]["lastName"] for traveler in booking_data["travelers"]]
+    last_names = [
+        t.get("name", {}).get("lastName")
+        for t in booking_data.get("travelers", [])
+        if t.get("name", {}).get("lastName")
+    ]
+    logger.debug(last_names)
+
     flight_order_id = booking_data["id"]
     flight_offer = booking_data["flightOffers"][0]
 
